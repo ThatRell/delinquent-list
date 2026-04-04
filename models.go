@@ -1,0 +1,45 @@
+package main
+
+type Record struct {
+	Account             string
+	Year                string
+	Jurisdiction        string
+	Tax_Unit_Acct       string
+	Levy                string
+	Homestead           string
+	Over65              string
+	Veteran             string
+	Disabled            string
+	AG                  string
+	Date_Paid           string
+	Due_Date            string
+	Omit_Flag           string
+	Levy_Balance        string
+	Suit                string
+	Causeno             string
+	Bankcode            string
+	BankruptNo          string
+	Attorney            string
+	Court_Cost          string
+	Abstract_Fee        string
+	Deferral            string
+	Billsupp            string
+	Split_PMTFlag       string
+	Category_Code       string
+	Owner               string
+	Address2            string
+	Address3            string
+	Address4            string
+	City                string
+	State               string
+	Zip                 string
+	Roll_Code           string
+	Parcel_No           string
+	Parcel_Name         string
+	Payment_Agreement   string
+	Total_Amount_Due    string
+	Total_Amount_Due_30 string
+	Total_Amount_Due_60 string
+	Total_Amount_Due_90 string
+	Amount_Indicator    string
+}

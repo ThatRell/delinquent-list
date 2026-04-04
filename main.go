@@ -22,6 +22,20 @@ func main() {
 	}
 
 	outputPath, err := ExtractFromZip(zipPath, outputDir)
+	if err != nil {
+		fmt.Print("error extracting zip")
+		return
+	}
+
 	fmt.Println("downloaded and extracted")
 	fmt.Println(outputPath)
+
+	date, err := ExtractDate(outputPath)
+	if err != nil {
+		fmt.Print("error getting date")
+		return
+	}
+
+	fmt.Println("Date: ", date)
+	ParseFile(outputPath, outputDir, date)
 }

@@ -11,6 +11,7 @@ import (
 )
 
 func DownloadFile(url, filepath string) error {
+	fmt.Println("Downloading file")
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -28,7 +29,7 @@ func DownloadFile(url, filepath string) error {
 }
 
 func ExtractFromZip(zipPath, outputDir string) (string, error) {
-
+	fmt.Println("Extracting zip")
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
 		fmt.Println("open zip error")
@@ -49,6 +50,8 @@ func ExtractFromZip(zipPath, outputDir string) (string, error) {
 			return "", err
 		}
 		defer rc.Close()
+
+		// parse somewhere here
 
 		outPath := filepath.Join(outputDir, base)
 
