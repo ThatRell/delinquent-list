@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -86,25 +87,29 @@ func ParseFile(outputPath string, outputDir string, currdate string) {
 		panic(err)
 	}
 
+	var count int
+
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		rec := ParseLine(line)
+		count += 1
 
 		// filter based on delinquency
 		// if DUE_DATE is before the YYYYMMDD in the output file name
 		// then it's a delinquent account
 		// the csv file is large so i think there's
 		// something wrong with my filtering
-		// also ints are displaying weird
+		// also ints are displaying weird, ex zipcodes
+		// i could filter by zipcodes as well
 		if IsOlder(rec.Due_Date, currdate) {
 			writer.Write([]string{
 				rec.Account,
-				rec.Year,
-				rec.Jurisdiction,
+				strconv.Itoa(rec.Year),
+				strconv.Itoa(rec.Jurisdiction),
 				rec.Tax_Unit_Acct,
-				rec.Levy,
+				strconv.Itoa(rec.Levy),
 				rec.Homestead,
 				rec.Over65,
 				rec.Veteran,
@@ -113,14 +118,14 @@ func ParseFile(outputPath string, outputDir string, currdate string) {
 				rec.Date_Paid,
 				rec.Due_Date,
 				rec.Omit_Flag,
-				rec.Levy_Balance,
+				strconv.Itoa(rec.Levy_Balance),
 				rec.Suit,
 				rec.Causeno,
 				rec.Bankcode,
 				rec.BankruptNo,
 				rec.Attorney,
-				rec.Court_Cost,
-				rec.Abstract_Fee,
+				strconv.Itoa(rec.Court_Cost),
+				strconv.Itoa(rec.Abstract_Fee),
 				rec.Deferral,
 				rec.Billsupp,
 				rec.Split_PMTFlag,
@@ -133,27 +138,38 @@ func ParseFile(outputPath string, outputDir string, currdate string) {
 				rec.State,
 				rec.Zip,
 				rec.Roll_Code,
-				rec.Parcel_No,
+				strconv.Itoa(rec.Parcel_No),
 				rec.Parcel_Name,
 				rec.Payment_Agreement,
-				rec.Total_Amount_Due,
-				rec.Total_Amount_Due_30,
-				rec.Total_Amount_Due_60,
-				rec.Total_Amount_Due_90,
+				strconv.Itoa(rec.Total_Amount_Due),
+				strconv.Itoa(rec.Total_Amount_Due_30),
+				strconv.Itoa(rec.Total_Amount_Due_60),
+				strconv.Itoa(rec.Total_Amount_Due_90),
 				rec.Amount_Indicator,
 			})
 		}
 	}
+	fmt.Println(count, " records written")
+}
+
+func NumericField(line string, start int, end int) int {
+	field, err := strconv.Atoi(line[start:end])
+	if err != nil {
+		fmt.Println("couldn't convert field to int")
+		panic(err)
+	}
+
+	return field
 }
 
 func ParseLine(line string) Record {
 	// start_index is start_position - 1
 	return Record{
 		Account:             strings.TrimSpace(line[0:34]),
-		Year:                strings.TrimSpace(line[34:38]),
-		Jurisdiction:        strings.TrimSpace(line[38:42]),
+		Year:                NumericField(line, 34, 38),
+		Jurisdiction:        NumericField(line, 38, 42),
 		Tax_Unit_Acct:       strings.TrimSpace(line[42:76]),
-		Levy:                strings.TrimSpace(line[76:87]),
+		Levy:                NumericField(line, 76, 87),
 		Homestead:           strings.TrimSpace(line[87:88]),
 		Over65:              strings.TrimSpace(line[88:89]),
 		Veteran:             strings.TrimSpace(line[89:90]),
@@ -162,14 +178,14 @@ func ParseLine(line string) Record {
 		Date_Paid:           strings.TrimSpace(line[92:100]),
 		Due_Date:            strings.TrimSpace(line[100:108]),
 		Omit_Flag:           strings.TrimSpace(line[108:110]),
-		Levy_Balance:        strings.TrimSpace(line[110:121]),
+		Levy_Balance:        NumericField(line, 110, 121),
 		Suit:                strings.TrimSpace(line[121:122]),
 		Causeno:             strings.TrimSpace(line[122:162]),
 		Bankcode:            strings.TrimSpace(line[162:163]),
 		BankruptNo:          strings.TrimSpace(line[163:203]),
 		Attorney:            strings.TrimSpace(line[203:204]),
-		Court_Cost:          strings.TrimSpace(line[204:211]),
-		Abstract_Fee:        strings.TrimSpace(line[211:218]),
+		Court_Cost:          NumericField(line, 204, 211),
+		Abstract_Fee:        NumericField(line, 211, 218),
 		Deferral:            strings.TrimSpace(line[218:219]),
 		Billsupp:            strings.TrimSpace(line[219:220]),
 		Split_PMTFlag:       strings.TrimSpace(line[220:221]),
@@ -182,13 +198,13 @@ func ParseLine(line string) Record {
 		State:               strings.TrimSpace(line[425:427]),
 		Zip:                 strings.TrimSpace(line[427:439]),
 		Roll_Code:           strings.TrimSpace(line[439:440]),
-		Parcel_No:           strings.TrimSpace(line[440:448]),
+		Parcel_No:           NumericField(line, 440, 448),
 		Parcel_Name:         strings.TrimSpace(line[448:488]),
 		Payment_Agreement:   strings.TrimSpace(line[488:489]),
-		Total_Amount_Due:    strings.TrimSpace(line[489:500]),
-		Total_Amount_Due_30: strings.TrimSpace(line[500:511]),
-		Total_Amount_Due_60: strings.TrimSpace(line[511:522]),
-		Total_Amount_Due_90: strings.TrimSpace(line[522:533]),
+		Total_Amount_Due:    NumericField(line, 489, 500),
+		Total_Amount_Due_30: NumericField(line, 500, 511),
+		Total_Amount_Due_60: NumericField(line, 511, 522),
+		Total_Amount_Due_90: NumericField(line, 522, 533),
 		Amount_Indicator:    strings.TrimSpace(line[533:534]),
 	}
 }

@@ -2,10 +2,10 @@ package main
 
 type Record struct {
 	Account             string
-	Year                string
-	Jurisdiction        string
+	Year                int
+	Jurisdiction        int
 	Tax_Unit_Acct       string
-	Levy                string
+	Levy                int
 	Homestead           string
 	Over65              string
 	Veteran             string
@@ -14,14 +14,14 @@ type Record struct {
 	Date_Paid           string
 	Due_Date            string
 	Omit_Flag           string
-	Levy_Balance        string
+	Levy_Balance        int
 	Suit                string
 	Causeno             string
 	Bankcode            string
 	BankruptNo          string
 	Attorney            string
-	Court_Cost          string
-	Abstract_Fee        string
+	Court_Cost          int
+	Abstract_Fee        int
 	Deferral            string
 	Billsupp            string
 	Split_PMTFlag       string
@@ -34,12 +34,12 @@ type Record struct {
 	State               string
 	Zip                 string
 	Roll_Code           string
-	Parcel_No           string
+	Parcel_No           int
 	Parcel_Name         string
 	Payment_Agreement   string
-	Total_Amount_Due    string
-	Total_Amount_Due_30 string
-	Total_Amount_Due_60 string
-	Total_Amount_Due_90 string
+	Total_Amount_Due    int
+	Total_Amount_Due_30 int
+	Total_Amount_Due_60 int
+	Total_Amount_Due_90 int
 	Amount_Indicator    string
 }
