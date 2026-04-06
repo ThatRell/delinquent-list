@@ -32,7 +32,7 @@ func OwesMoney(rec *Record) bool {
 	return rec.Total_Amount_Due > 0
 }
 
-func IsCorporate(name string) bool {
+func IsNonResidential(name string) bool {
 
 	words := strings.Split(strings.ToUpper(name), " ")
 	has := map[string]bool{}
@@ -42,6 +42,7 @@ func IsCorporate(name string) bool {
 
 	keywords := []string{
 		"LLC", "INC", "BANK", "CITY", "COUNTY", "DISTRICT",
+		"ISD", "UTILITY", "UTILITIES", "ROW", "PIPELINE",
 	}
 
 	for _, k := range keywords {
@@ -57,7 +58,16 @@ func filter(rec *Record) bool {
 	if rec.State != "TX" {
 		return false
 	}
-	if IsCorporate(rec.Owner) {
+	if IsNonResidential(rec.Owner) {
+		return false
+	}
+	if IsNonResidential(rec.Address2) {
+		return false
+	}
+	if IsNonResidential(rec.Address3) {
+		return false
+	}
+	if IsNonResidential(rec.Address4) {
 		return false
 	}
 
@@ -94,10 +104,10 @@ func ParseFile(outputPath string, outputDir string, currdate string) {
 		count += 1
 
 		// filter based on delinquency + other methods
-		if isBefore(rec.Due_Date, currdate) && OwesMoney(&rec) && filter(&rec) && !seen[rec.Account+rec.Owner+rec.Address2] {
+		if !seen[rec.Account+rec.Owner+rec.Address2+rec.Address3+rec.Address4] && isBefore(rec.Due_Date, currdate) && OwesMoney(&rec) && filter(&rec) {
 
 			deliCount += 1
-			seen[rec.Account+rec.Owner+rec.Address2] = true
+			seen[rec.Account+rec.Owner+rec.Address2+rec.Address3+rec.Address4] = true
 			entry := rec.ToEntry()
 
 			//writer.Write(rec.RecordStrings())
