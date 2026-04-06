@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 )
 
 // downloadURL may need to change depending on if link changes
@@ -14,21 +13,18 @@ const (
 )
 
 func main() {
-	os.MkdirAll(outputDir, os.ModePerm)
-	err := DownloadFile(zipURL, zipPath)
-	if err != nil {
-		fmt.Print("error downloading file")
-		return
-	}
+	// os.MkdirAll(outputDir, os.ModePerm)
+	// err := DownloadFile(zipURL, zipPath)
+	// if err != nil {
+	// 	fmt.Print("error downloading file")
+	// 	return
+	// }
 
 	outputPath, err := ExtractFromZip(zipPath, outputDir)
 	if err != nil {
 		fmt.Print("error extracting zip")
 		return
 	}
-
-	fmt.Println("downloaded and extracted")
-	fmt.Println(outputPath)
 
 	date, err := ExtractDate(outputPath)
 	if err != nil {
@@ -37,5 +33,7 @@ func main() {
 	}
 
 	fmt.Println("Date: ", date)
+
+	fmt.Println(outputPath)
 	ParseFile(outputPath, outputDir, date)
 }
