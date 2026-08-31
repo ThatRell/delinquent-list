@@ -2,38 +2,41 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 )
 
-// downloadURL may need to change depending on if link changes
-// in downloadfile, have a guaranteed way to get the zip file even if name changes
 const (
-	zipURL    = "https://www.dallascounty.org/Assets/uploads/docs/tax/trw/trwfile.725050.zip"
-	zipPath   = "trw.zip"
-	outputDir = "./data"
+	pattern     = "trw-files-*"
+	zipFileName = "trw.zip"
+	txtFileName = "trw.txt"
 )
 
 func main() {
-	// os.MkdirAll(outputDir, os.ModePerm)
-	// err := DownloadFile(zipURL, zipPath)
-	// if err != nil {
-	// 	fmt.Print("error downloading file")
-	// 	return
-	// }
-
-	outputPath, err := ExtractFromZip(zipPath, outputDir)
+	tempDirPath, err := os.MkdirTemp("", pattern)
 	if err != nil {
-		fmt.Print("error extracting zip")
-		return
+		log.Fatal(err)
+	}
+	// deletes directory when main function exits
+	// probably needs to change because im doing a schedular for the main function
+	defer os.RemoveAll(tempDirPath)
+
+	latestURL, err := GetLatestTaxRollURL()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("This week's target URL is:", latestURL)
+
+	zipPath := filepath.Join(tempDirPath, zipFileName)
+	err = DownloadFile(latestURL, zipPath)
+	if err != nil {
+		log.Println("Download failed:", err)
 	}
 
-	date, err := ExtractDate(outputPath)
+	txtPath := filepath.Join(tempDirPath, txtFileName)
+	err = UnzipFile(zipPath, txtPath)
 	if err != nil {
-		fmt.Print("error getting date")
-		return
+		log.Println("Unzip failed:", err)
 	}
-
-	fmt.Println("Date: ", date)
-
-	fmt.Println(outputPath)
-	ParseFile(outputPath, outputDir, date)
 }
